@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: my AWS key-value store
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: AWS key-value store
+
+Globals:
+  Function:
+    Timeout: 20
+
+Resources:
+  KeyValueStoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri:
+      Handler: my.store.assignment.StreamLambdaHandler::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+          REDIS_CLUSTER_MODE_ON: false
+          REDIS_HOST: docker.for.win.localhost
+          REDIS_PORT: 6379
+          
+      Events:
+        GetValue:
+          Type: Api
+          Properties:
+            Path: /store/{key}
+            Method: get
+        PutValue:
+          Type: Api
+          Properties:
+            Path: /store/{key}/{value}
+            Method: post
+
+Outputs:
+  KeyValueStoreApi:
+    Description: "Key-value store API Gateway endpoint URL for Prod stage for key-value store function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/store/"
+  KeyValueStoreFunction:
+    Description: "Key-value Store Lambda Function ARN"
+    Value: !GetAtt KeyValueStoreFunction.Arn
+  KeyValueStoreFunctionIamRole:
+    Description: "Implicit IAM Role created for Key-value Store function"
+    Value: !GetAtt KeyValueStoreFunctionRole.Arn

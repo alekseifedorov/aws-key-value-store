@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  redis:
+    clusterMode: ${REDIS_CLUSTER_MODE_ON:false}
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:4598}
+
