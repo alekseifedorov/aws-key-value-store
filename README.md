@@ -6,11 +6,24 @@ This application is based on the following stack:
 - **Redis** as persistent data storage.
 - **Spring Boot / Spring MVC**
 - **Gradle**
-   
+
+The most benefits of AWS Lambda are following:
+-  Minimized Cost
+-  Automatic Scalability
+-  Quicker Iterative Development
+-  Less Operational Management
+
+The most benefits of SAM are following:
+-  Single-deployment configuration. AWS SAM makes it easy to organize related components and resources, 
+   and operate on a single stack
+-  Extension of AWS CloudFormation
+-  Local debugging and testing
+
 Prerequisites:
    -  localstack (https://docs.localstack.cloud/get-started/)
    -  samlocal (https://docs.localstack.cloud/integrations/aws-sam/)
    -  Redis (docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest)
+        It's possible to add the Redis cluster in the SAM template.yaml
       
 2. How to build and deploy
    Please, specify the hostname and port of Redis installed in advance in template.yaml as follows:
