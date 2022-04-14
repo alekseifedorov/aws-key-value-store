@@ -1,76 +1,38 @@
-1. This is a web application based on the following stack:
-   - Spring Boot 
-   - RESTEasy framework
-   - Hibernate
-   - in-memory H2 database
-   - Orika mapper
+1. This is a simple key-value store with two HTTP endpoints. 
+
+This application is based on the following stack:
+- **AWS SAM** as a framework to build and deploy the application
+- **AWS Lambda**
+- **Redis** as persistent data storage.
+- **Spring Boot / Spring MVC**
+- **Gradle**
    
-   There is one integration test based on @SpringBootTest, and one unit test based on JUnit and AssertJ. 
-   
-   The list of entities is following:
-   - DeveloperEntity
-   - StoryEntity
-   - BugEntity 
-     
-   Three stories, two developers and a bug are created upon starting.
-
-   **To calculate the plan** :
-    -  open http://localhost:8080/api/v1/issue-tracker/plan in a web browser
-    -  OR curl --location --request GET "http://localhost:8080/api/v1/issue-tracker/plan"
-       use `| jq` to print in a pretty format 
-       The Swagger 2.0 specification of the service can be found on http://localhost:8080/api/v1/swagger.json
-       
-    The algorithm to calculate the plan is following:
-    a. Take the next story from the list of stories
-    b. Find the first developer with the minimal load and assign the story to this developer
-    c. Go to the first step 
-   
-2. How to build
-
-    Type 'gradlew clean build' to build tracker-1.0.jar.
-
-    The server port is specified in application.properties (server.port=8080)
-
-3. How to run
-
-    Type either of the following commands:
-      -  gradlew clean build && java -jar build/libs/tracker-1.0.jar
-      -  gradlew bootRun
-
-4. The Swagger 2.0 specification of the service can be found on http://localhost:8080/api/v1/swagger.json
-         
-    The REST service exposes the following endpoints:
-
-    - To calculate the plan
-      curl --location --request GET "http://localhost:8080/api/v1/issue-tracker/plan"
+Prerequisites:
+   -  localstack (https://docs.localstack.cloud/get-started/)
+   -  samlocal (https://docs.localstack.cloud/integrations/aws-sam/)
+   -  Redis (docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest)
       
-    - Add or update a story
-      curl --location --request POST "http://localhost:8080/api/v1/issue-tracker/story" --header "Content-Type: application/json" --data-raw "{ \"title\": \"Design Rest API\", \"description\": \"Design Rest API\", \"points\": 7 }"
+2. How to build and deploy
+   Please, specify the hostname and port of Redis installed in advance in template.yaml as follows:
+   
+```
+   Environment:
+     Variables:
+       REDIS_CLUSTER_MODE_ON: false
+       REDIS_HOST: docker.for.win.localhost
+       REDIS_PORT: 6379
+```
 
-    - List all existing stories
-      curl --location --request GET "http://localhost:8080/api/v1/issue-tracker/story"
+Type the following commands:
+   -  samlocal build
+   -  samlocal deploy --guided
+   -  samlocal local start-api
+   -  'samlocal delete' to delete the stack 
 
-    - Delete a story
-      curl --location --request DELETE "http://localhost:8080/api/v1/issue-tracker/story/{uuid}" 
+3. How to use
+   **To set a key** :
+   -  curl --location --request POST "http://localhost:3000/store/key/value"
 
-    - Add or update a developer
-      curl --location --request POST "http://localhost:8080/api/v1/issue-tracker/developer" --header "Content-Type: application/json" --data-raw "{ \"name\": \"Frodo Baggings\"}"
-
-    - List all existing developers
-      curl --location --request GET "http://localhost:8080/api/v1/issue-tracker/developer"
-
-    - Delete a developer
-      curl --location --request DELETE "http://localhost:8080/api/v1/issue-tracker/developer/{uuid}"
-
-    - Add or update a bug
-      curl --location --request POST "http://localhost:8080/api/v1/issue-tracker/bug" --header "Content-Type: application/json" --data-raw "{ \"title\": \"Bug title1\", \"description\": \"Bug description1\", \"status\": \"NEW\", \"priority\": \"MAJOR\" }"
-
-    - List all existing bugs
-      curl --location --request GET "http://localhost:8080/api/v1/issue-tracker/bug"
-
-    - Delete a bug
-      curl --location --request DELETE "http://localhost:8080/api/v1/issue-tracker/bug/{uuid}" 
-      
-    - Assign a bug to a developer
-      curl --location --request GET "http://localhost:8080/api/v1/issue-tracker/developer/{developerId}/bug/{bugId}"
-
+   **To get a key** :
+   -  curl --location --request GET "http://localhost:3000/store/key"
+   -  OR open "http://localhost:3000/store/key" in a web browser

@@ -21,7 +21,6 @@ Resources:
       MemorySize: 512
       Environment:
         Variables:
-          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
           REDIS_CLUSTER_MODE_ON: false
           REDIS_HOST: docker.for.win.localhost
           REDIS_PORT: 6379
